@@ -35,6 +35,8 @@ async def main(port: int, addr: str, max_packets: int, log_file: Path = None):
         where to store the data received (student must add code for this)
     """
 
+    f = open("log.txt", "w")
+
     if log_file:
         log_file = Path(log_file).expanduser()
 
@@ -53,7 +55,10 @@ async def main(port: int, addr: str, max_packets: int, log_file: Path = None):
                 pass
                 # print(f"{i} total messages received")
             print(data)
+            f.write(data)
+            f.write("\n")
 
+    f.close()
 
 def cli():
     p = argparse.ArgumentParser(description="WebSocket client")

@@ -12,11 +12,11 @@ import pandas
 from pathlib import Path
 import argparse
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import typing as T
 import matplotlib.pyplot as plt
 import numpy as np
-
+from scipy import stats
 
 def load_data(file: Path) -> T.Dict[str, pandas.DataFrame]:
 
@@ -51,7 +51,39 @@ if __name__ == "__main__":
     file = Path(P.file).expanduser()
 
     data = load_data(file)
+    
+    temperature = data['temperature']['office'].dropna()
+    occupancy = data['occupancy']['office'].dropna()
+    co2 = data['co2']['office'].dropna()
 
+    print("Median temperature in office: " + str(np.median(temperature)))
+    print("Variance of temperature in office: " + str(np.var(temperature)))
+    print("Median occupancy in office: " + str(np.median(occupancy)))
+    print("Variance of occupancy in office: " + str(np.var(occupancy)))
+
+    plt.hist(temperature, bins = 100)
+    plt.show()
+
+    plt.hist(occupancy, bins = 100)
+    plt.show()
+
+    plt.hist(co2, bins = 100)
+    plt.show()
+
+    interval = []
+    for i in range(1,len(data['co2'])):
+        x = data['co2']['office'].index[i-1]
+        y = data['co2']['office'].index[i]
+        interval.append((y-x).seconds + ((y-x).microseconds/(1*10**6)))
+
+    
+    
+    print("Mean time interval: " + str(np.mean(interval)))
+    print("Variance of time interval: " + str(np.var(interval)))
+    plt.hist(interval, bins = 100)
+    plt.show()
+
+    
     for k in data:
         # data[k].plot()
         time = data[k].index
@@ -61,3 +93,4 @@ if __name__ == "__main__":
         plt.xlabel("Time (seconds)")
 
     plt.show()
+
